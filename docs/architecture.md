@@ -7,7 +7,13 @@ The system follows MVC architecture with a dedicated service layer and loosely c
 
 The goal is to keep business logic isolated, testable, and scalable.
 ## Goals
-
+- Clear separation of concerns
+- Scalable architecture
+- Testable business logic
+- Loosely coupled data access
+- Versioned API (V1, V2, V3)
+- Clean commit history
+- Easy feature extension
 ## Non-Goals
 
 ## High Level Architecture
