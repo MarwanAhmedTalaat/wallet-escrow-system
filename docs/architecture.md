@@ -15,7 +15,11 @@ The goal is to keep business logic isolated, testable, and scalable.
 - Clean commit history
 - Easy feature extension
 ## Non-Goals
-
+- No microservices architecture
+- No event-driven system (for now)
+- No real-time updates
+- No distributed transactions
+- No multi-database runtime support
 ## High Level Architecture
 
 ## Layers
