@@ -21,6 +21,9 @@ The goal is to keep business logic isolated, testable, and scalable.
 - No distributed transactions
 - No multi-database runtime support
 ## High Level Architecture
+Client ---> Router ---> Controller ---> Service ---> Data Access ---> Database
+
+Each layer has a single responsibility and communicates only with the next layer.
 
 ## Layers
 - Router Layer
