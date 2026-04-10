@@ -26,10 +26,18 @@ Client ---> Router ---> Controller ---> Service ---> Data Access ---> Database
 Each layer has a single responsibility and communicates only with the next layer.
 
 ## Layers
-- Router Layer
-- Controller Layer
-- Service Layer
-- Data Access Layer
+
+### Router Layer
+Responsible for defining routes and attaching controllers.
+
+### Controller Layer
+Handles request/response and calls services.
+
+### Service Layer
+Contains business logic and use cases.
+
+### Data Access Layer
+Handles database operations and abstracts persistence.
 
 ## Folder Structure
 
