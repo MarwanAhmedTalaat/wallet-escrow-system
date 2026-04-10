@@ -1,7 +1,11 @@
 # Wallet API Architecture
 
 ## Overview
+Wallet API is a RESTful backend service for managing user wallets, balances, and transactions.
 
+The system follows MVC architecture with a dedicated service layer and loosely coupled data access.
+
+The goal is to keep business logic isolated, testable, and scalable.
 ## Goals
 
 ## Non-Goals
