@@ -63,7 +63,39 @@ wallet-api/
 7. **Repository (wallet.repository.js)**: Interacts with the `wallet.model.js`.
 8. **Response**: The Controller sends the final JSON back to the Client.
 ## Versioning Strategy
+The project evolves using incremental versions.
 
+V1
+- Create wallet
+- Get wallet
+- Basic balance
+
+V2
+- Credit wallet
+- Debit wallet
+- Transaction history
+
+V3
+- Transfer between wallets
+- Concurrency handling
+- Idempotency
 ## Database Design (High level)
+Initial database: MongoDB
 
+Wallet
+- _id
+- userId
+- balance
+- currency
+- createdAt
+- updatedAt
+
+Transactions will be introduced in V2.
 ## Future Extensions
+- Wallet to wallet transfer
+- Multiple currencies
+- Transaction limits
+- Scheduled payments
+- External payment providers
+- Notifications
+- Audit logs
