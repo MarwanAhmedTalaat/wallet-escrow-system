@@ -1,11 +1,7 @@
 const express = require("express")
 const Router = express.Router()
+const walletController = require("../wallet/wallet.controller.js")
 Router
 .route("/")
-.post((req,res)=>{
-    res.json({
-        success : true,
-        message : "create wallet"
-    })
-})
+.post(walletController.createWallet)
 module.exports = Router
