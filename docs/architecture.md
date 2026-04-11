@@ -36,7 +36,7 @@ Handles request/response and calls services.
 ### Service Layer
 Contains business logic and use cases.
 
-### Data Access Layer
+### Repository Layer
 Handles database operations and abstracts persistence.
 
 ## Folder Structure
