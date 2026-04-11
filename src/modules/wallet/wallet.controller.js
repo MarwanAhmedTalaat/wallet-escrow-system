@@ -7,14 +7,23 @@ exports.createWallet = async (req,res,next)=>{
     })
 }
 exports.getWallet = async(req,res,next)=>{
-    const {id} = req.params
-    const data = await walletService.getWallet(id)
+    const wallet = await walletService.getWallet(req.params.id)
     if(!data) return res.status(404).json({
         success : false,
-        messgae : "Wallet with this ID not founded"
+        message : "Wallet with this ID not founded"
     })
     res.status(200).json({
         success : true,
-        data : data
+        data : wallet
+    })
+}
+exports.getBalance = async(req,res,next)=>{
+    const balance = await walletService.getBalance(req.params.id)
+    if(!balance) return res.status(404).json({
+        success : false,
+        message : "Balance not found"
+    })
+    res.status(200).json({
+        data : balance
     })
 }

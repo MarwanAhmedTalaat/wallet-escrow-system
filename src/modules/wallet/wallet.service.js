@@ -5,3 +5,8 @@ exports.createWallet = async (data)=>{
 exports.getWallet = async (id)=>{
     return await walletRepo.getWallet(id)
 }
+exports.getBalance = async(id)=>{
+    const wallet = await walletRepo.getWallet(id)
+    if(!wallet) return null
+    return wallet.balance
+}

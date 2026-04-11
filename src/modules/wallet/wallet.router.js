@@ -8,4 +8,7 @@ Router
 Router
 .route("/:id")
 .get(walletController.getWallet)
+Router
+.route("/:id/balance")
+.get(walletController.getBalance)
 module.exports = Router
