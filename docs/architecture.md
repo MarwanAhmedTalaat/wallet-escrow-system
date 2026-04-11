@@ -54,7 +54,14 @@ wallet-api/
  │    └── server.js
  └── package.json
 ## Request Flow
-
+1. **Client**: Sends HTTP request.
+2. **Server (server.js)**: Receives request and passes it to `app.js`.
+3. **Router (routes/index.js)**: Directs request to the `wallet.router.js`.
+4. **Validation (wallet.validation.js)**: Middleware checks if the input is correct.
+5. **Controller (wallet.controller.js)**: Extracts data and calls the Service.
+6. **Service (wallet.service.js)**: Executes business logic (The "Brain").
+7. **Repository (wallet.repository.js)**: Interacts with the `wallet.model.js`.
+8. **Response**: The Controller sends the final JSON back to the Client.
 ## Versioning Strategy
 
 ## Database Design (High level)
