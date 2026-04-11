@@ -40,7 +40,19 @@ Contains business logic and use cases.
 Handles database operations and abstracts persistence.
 
 ## Folder Structure
-
+wallet-api/
+ ├── docs/
+ ├── src/
+ │    ├── config/
+ │    ├── core/
+ │    │    ├── middleware/
+ │    │    └── errors/
+ │    ├── modules/
+ │    │    └── wallet/
+ │    ├── routes/
+ │    ├── app.js
+ │    └── server.js
+ └── package.json
 ## Request Flow
 
 ## Versioning Strategy
