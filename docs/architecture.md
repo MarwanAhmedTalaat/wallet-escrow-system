@@ -99,3 +99,31 @@ Transactions will be introduced in V2.
 - External payment providers
 - Notifications
 - Audit logs
+## V1 Modules
+
+Wallet Module
+- wallet.router.js
+- wallet.controller.js
+- wallet.service.js
+- wallet.repository.js
+- wallet.model.js
+- wallet.validation.js
+
+V1 Endpoints
+- POST /wallet
+- GET /wallet/:id
+- GET /wallet/:id/balance
+
+Wallet Schema
+- _id
+- userId
+- balance (default: 0)
+- currency (default: EGP)
+- createdAt
+- updatedAt
+
+V1 Rules
+- Wallet starts with balance = 0
+- One wallet per user
+- Balance cannot be negative
+- Currency is fixed on creation
