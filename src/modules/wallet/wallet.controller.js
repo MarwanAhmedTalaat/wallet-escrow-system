@@ -1,8 +1,8 @@
 const walletService = require("./wallet.service.js")
 exports.createWallet = async (req,res)=>{
-    const result = await walletService.createWallet()
+    const data = await walletService.createWallet(req.body)
     res.json({
         success : true,
-        data : result
+        data : data
     })
 }
