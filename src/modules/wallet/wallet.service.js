@@ -20,7 +20,7 @@ exports.creditWallet = async (id,amount)=>{
     if(!wallet) throw new AppError(400,"Wallet with this ID not found")
     wallet.balance += amount
     await wallet.save()
-    await Transaction.create({walletId:wallet._id,type:"credit",amount:amount,balanceAfter:wallet.balance})
+    await Transaction.create({walletId:wallet._id,operation:"credit",amount:amount,balanceAfter:wallet.balance})
     return wallet.balance
 }
 exports.debitWallet = async (id,amount)=>{
@@ -29,7 +29,7 @@ exports.debitWallet = async (id,amount)=>{
     if(wallet.balance < amount) throw new AppError(400,`Proccess Failed ! ----> Your balance is ${wallet.balance}`)
     wallet.balance -= amount
     await wallet.save()
-    await Transaction.create({walletId:wallet._id,type:"debit",amount:amount,balanceAfter:wallet.balance})
+    await Transaction.create({walletId:wallet._id,operation:"debit",amount:amount,balanceAfter:wallet.balance})
     return wallet.balance
 }
 exports.getWalletTransactions = async (walletId)=>{

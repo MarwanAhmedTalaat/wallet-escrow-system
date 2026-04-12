@@ -5,14 +5,14 @@ const transactionSchema = new mongoose.Schema({
         ref : "Wallet",
         required :true
     },
-    type : {
+    operation : {
         type : String,
         enum : ["credit","debit"],
         required :true
     },
     amount : {
         type : Number,
-        required : true,
+        required : true
     },
     balanceAfter : {
         type : Number,
