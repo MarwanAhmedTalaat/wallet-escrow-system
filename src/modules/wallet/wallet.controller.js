@@ -35,3 +35,14 @@ exports.debitWallet = catchAsync(async (req,res,next)=>{
         balance : debit
     })
 })
+exports.getWalletTransactions = catchAsync(async(req,res,next)=>{
+    const transactions = await walletService.getWalletTransactions(req.params.id)
+    if(transactions.length === 0) return res.status(200).json({
+        success : true,
+        message : "No Transaction for this wallet "
+    })
+    res.status(200).json({
+        success : true,
+        data : transactions
+    })
+})

@@ -17,4 +17,7 @@ Router
 Router
 .route("/:id/debit")
 .patch(validateWallet.validateAmount,walletController.debitWallet)
+Router
+.route("/:id/transactions")
+.get(walletController.getWalletTransactions)
 module.exports = Router

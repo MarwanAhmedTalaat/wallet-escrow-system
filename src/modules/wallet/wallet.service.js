@@ -1,5 +1,6 @@
 const walletRepo = require("../wallet/wallet.repository.js")
 const Transaction = require("../transaction/transaction.model.js")
+const transactionRepo = require("../transaction/transaction.repository.js")
 const AppError = require("../../core/utils/AppError.js")
 exports.createWallet = async (data)=>{
     return await walletRepo.createWallet(data)
@@ -30,4 +31,9 @@ exports.debitWallet = async (id,amount)=>{
     await wallet.save()
     await Transaction.create({walletId:wallet._id,type:"debit",amount:amount,balanceAfter:wallet.balance})
     return wallet.balance
+}
+exports.getWalletTransactions = async (walletId)=>{
+    const transaction = await transactionRepo.getWalletTransactions(walletId)
+    if(!transaction) throw new AppError(400,"Transaction for this Wallet not found")
+    return transaction
 }
