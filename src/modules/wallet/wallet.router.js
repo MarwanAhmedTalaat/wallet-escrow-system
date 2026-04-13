@@ -5,6 +5,7 @@ const validateWallet = require("./wallet.validation.js")
 Router
 .route("/")
 .post(validateWallet.validateCreateWallet,walletController.createWallet)
+.get(walletController.getAllWallet)
 Router
 .route("/:id")
 .get(walletController.getWallet)
@@ -20,4 +21,7 @@ Router
 Router
 .route("/:id/transactions")
 .get(walletController.getWalletTransactions)
+Router
+.route("/:id/transfer")
+.post(walletController.transfer)
 module.exports = Router

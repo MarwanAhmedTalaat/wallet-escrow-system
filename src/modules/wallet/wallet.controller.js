@@ -8,6 +8,17 @@ exports.createWallet = catchAsync(async (req,res,next)=>{
         data : data
     })
 }) 
+exports.getAllWallet = catchAsync(async(req,res,next)=>{
+    const wallets = await walletService.getAllWallet()
+    if( wallets.length === 0) return res.status(200).json({
+        success : true,
+        message : "No wallets to display"
+    })
+    res.status(200).json({
+        success : true,
+        wallets : wallets
+    })
+})
 exports.getWallet = catchAsync(async(req,res,next)=>{
     const wallet = await walletService.getWallet(req.params.id)
     res.status(200).json({
@@ -44,5 +55,13 @@ exports.getWalletTransactions = catchAsync(async(req,res,next)=>{
     res.status(200).json({
         success : true,
         data : transactions
+    })
+})
+exports.transfer = catchAsync(async (req,res,next) => {
+    const {toWalletId,amount} = req.body
+    const transfer = await walletService.transfer(req.params.id,toWalletId,amount)
+    res.status(200).json({
+        success : true,
+        data : transfer
     })
 })

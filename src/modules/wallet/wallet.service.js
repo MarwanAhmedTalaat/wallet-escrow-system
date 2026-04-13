@@ -1,9 +1,14 @@
 const walletRepo = require("../wallet/wallet.repository.js")
 const Transaction = require("../transaction/transaction.model.js")
 const transactionRepo = require("../transaction/transaction.repository.js")
+const mongoose = require("mongoose")
 const AppError = require("../../core/utils/AppError.js")
 exports.createWallet = async (data)=>{
     return await walletRepo.createWallet(data)
+}
+exports.getAllWallet = async()=>{
+    const wallets = await walletRepo.getAllWallet()
+    return wallets
 }
 exports.getWallet = async (id)=>{
     const wallet = await walletRepo.getWallet(id)
@@ -36,4 +41,30 @@ exports.getWalletTransactions = async (walletId)=>{
     const transaction = await transactionRepo.getWalletTransactions(walletId)
     if(!transaction) throw new AppError(400,"Transaction for this Wallet not found")
     return transaction
+}
+exports.transfer = async (from , to , amount)=>{
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+    const walletFrom = await walletRepo.getWallet(from, session)
+    const walletTo = await walletRepo.getWallet(to, session)
+    if(!walletFrom || !walletTo) throw new AppError(400,"Transfer Failed !")
+    if(from === to) throw new AppError(400,"Cannot transfer to same wallet")
+    if(walletFrom.balance < amount) throw new AppError(400,"You don't Have balance ")
+    walletFrom.balance -= amount
+    walletTo.balance += amount
+    await walletFrom.save({ session })
+    await walletTo.save({ session })
+    await Transaction.create([{walletId: walletFrom._id,operation: "debit",amount,balanceAfter: walletFrom.balance}],{ session }
+    )
+    await Transaction.create([{walletId: walletTo._id,operation: "credit",amount,balanceAfter: walletTo.balance}],{ session }
+    )
+    await session.commitTransaction()
+    session.endSession()
+    return { transactionId: Transaction._id, from: walletFrom._id, to: walletTo._id, amount, balanceAfter: walletFrom.balance }
+    } catch (error) {
+        await session.abortTransaction()
+        session.endSession()
+        throw error
+    }
 }

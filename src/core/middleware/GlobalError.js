@@ -16,6 +16,7 @@ const GlobalError = (err,req,res,next) => {
             message: error.message
         })
     }
+    console.error(err.stack)
     res.status(error.status||500).json({
         success : false ,
         message : "Internal Server Error"
