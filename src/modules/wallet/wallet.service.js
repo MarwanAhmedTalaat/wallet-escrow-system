@@ -38,11 +38,21 @@ exports.debitWallet = async (id,amount)=>{
     await Transaction.create({walletId:wallet._id,operation:"debit",amount:amount,balanceAfter:wallet.balance})
     return wallet.balance
 }
-exports.getWalletTransactions = async (walletId,query)=>{
-    const feature = new apiFeatures(transactionRepo.getWalletTransactions(walletId),query).filter().sort().fields().pagination()
-    const transaction = await feature.query
-    if(!transaction) throw new AppError(400,"Transaction for this Wallet not found")
-    return transaction
+exports.getWalletTransactions = async (walletId, query) => {
+    const total = await Transaction.countDocuments({ walletId })
+    const features = new apiFeatures(
+        transactionRepo.getWalletTransactions(walletId),query)
+    .filter()
+    .sort()
+    .fields()
+    .pagination()
+    const transactions = await features.query
+    return {
+        total,
+        page: query.page * 1 || 1,
+        limit: query.limit * 1 || 10,
+        transactions
+    }
 }
 exports.transfer = async (from , to , amount)=>{
     const session = await mongoose.startSession()

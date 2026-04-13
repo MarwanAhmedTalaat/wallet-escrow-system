@@ -47,31 +47,44 @@ exports.debitWallet = catchAsync(async (req,res,next)=>{
     })
 })
 exports.getWalletTransactions = catchAsync(async(req,res,next)=>{
-    const transactions = await walletService.getWalletTransactions(req.params.id,req.query)
-    if(transactions.length === 0) return res.status(200).json({
-        success : true,
-        message : "No Transaction for this wallet "
-    })
-    const formatted = transactions.map(t => {
-    let description = null
-    let direction = null
-    if(t.category === "transfer"){
-        if(t.operation === "debit"){
-            description = `Transfer to wallet ${t.relatedWallet._id}`
-            direction = "out"
-        }else{
-            description = `Transfer from wallet ${t.relatedWallet._id}`
-            direction = "in"
-        }
+    const result = await walletService.getWalletTransactions(req.params.id,req.query)
+    if(result.transactions.length === 0){
+        return res.status(200).json({
+            success : true,
+            message : "No Transaction for this wallet "
+        })
     }
-    const obj = t.toObject()
-    if(description) obj.description = description
-    if(direction) obj.direction = direction
-    return obj
+    const formatted = result.transactions.map(t => {
+        let description
+        let direction
+        if(t.category === "transfer"){
+            if(t.operation === "debit"){
+                description = `Transfer to wallet ${t.relatedWallet?._id}`
+                direction = "out"
+            }else{
+                description = `Transfer from wallet ${t.relatedWallet?._id}`
+                direction = "in"
+            }
+        }
+        const obj = t.toObject()
+        if(description) obj.description = description
+        if(direction) obj.direction = direction
+        return obj
     })
+    const pages = Math.ceil(result.total / result.limit)
+    const meta = {
+    page: result.page,
+    limit: result.limit,
+    results: formatted.length,
+    total: result.total,
+    pages,
+    hasNext: result.page < pages,
+    hasPrev: result.page > 1
+    }
     res.status(200).json({
-        success : true,
-        data : formatted
+        success: true,
+        meta,
+        data: formatted
     })
 })
 exports.transfer = catchAsync(async (req,res,next) => {
