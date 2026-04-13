@@ -50,14 +50,14 @@ exports.transfer = async (from , to , amount)=>{
     const walletTo = await walletRepo.getWallet(to, session)
     if(!walletFrom || !walletTo) throw new AppError(400,"Transfer Failed !")
     if(from === to) throw new AppError(400,"Cannot transfer to same wallet")
-    if(walletFrom.balance < amount) throw new AppError(400,"You don't Have balance ")
+    if(walletFrom.balance < amount) throw new AppError(400,"You don't have enough balance to make this transfer")
     walletFrom.balance -= amount
     walletTo.balance += amount
     await walletFrom.save({ session })
     await walletTo.save({ session })
-    await Transaction.create([{walletId: walletFrom._id,operation: "debit",amount,balanceAfter: walletFrom.balance}],{ session }
+    await Transaction.create([{walletId: walletFrom._id,operation: "debit",category: "transfer",relatedWallet: walletTo._id,amount,balanceAfter: walletFrom.balance}],{ session }
     )
-    await Transaction.create([{walletId: walletTo._id,operation: "credit",amount,balanceAfter: walletTo.balance}],{ session }
+    await Transaction.create([{walletId: walletTo._id,operation: "credit",category: "transfer",relatedWallet: walletFrom._id,amount,balanceAfter: walletTo.balance}],{ session }
     )
     await session.commitTransaction()
     session.endSession()

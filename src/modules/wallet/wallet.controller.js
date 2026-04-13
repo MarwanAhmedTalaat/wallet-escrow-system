@@ -52,9 +52,26 @@ exports.getWalletTransactions = catchAsync(async(req,res,next)=>{
         success : true,
         message : "No Transaction for this wallet "
     })
+    const formatted = transactions.map(t => {
+    let description = null
+    let direction = null
+    if(t.category === "transfer"){
+        if(t.operation === "debit"){
+            description = `Transfer to wallet ${t.relatedWallet._id}`
+            direction = "out"
+        }else{
+            description = `Transfer from wallet ${t.relatedWallet._id}`
+            direction = "in"
+        }
+    }
+    const obj = t.toObject()
+    if(description) obj.description = description
+    if(direction) obj.direction = direction
+    return obj
+    })
     res.status(200).json({
         success : true,
-        data : transactions
+        data : formatted
     })
 })
 exports.transfer = catchAsync(async (req,res,next) => {

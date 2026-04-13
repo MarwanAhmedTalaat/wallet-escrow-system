@@ -10,6 +10,14 @@ const transactionSchema = new mongoose.Schema({
         enum : ["credit","debit"],
         required :true
     },
+    category : {
+    type : String,
+    enum: ["transfer","refund","fee"]
+    },
+    relatedWallet : {
+    type : mongoose.Schema.Types.ObjectId,
+    ref : "Wallet"
+    },
     amount : {
         type : Number,
         required : true
