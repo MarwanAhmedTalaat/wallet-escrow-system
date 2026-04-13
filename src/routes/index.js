@@ -1,15 +1,15 @@
-const express = require('express');
+const express = require('express')
+const router = express.Router()
+
 const walletRoute = require("../modules/wallet/wallet.router.js")
-const Router = express.Router()
-Router
-.route("/test")
-.get((req,res)=>{
+
+router.get("/test",(req,res)=>{
     res.json({
-        success :true,
-        message : "Hello Test"
+        success : true,
+        message : "Hello Server"
     })
 })
-Router
-.use("/wallet",walletRoute)
 
-module.exports = Router
+router.use("/wallet", walletRoute)
+
+module.exports = router

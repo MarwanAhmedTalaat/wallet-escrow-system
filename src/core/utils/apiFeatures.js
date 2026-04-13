@@ -32,9 +32,11 @@ class ApiFeatures {
         return this
     }
     pagination(){
-        let page = this.queryStr.page * 1|| 1 
-        let limit = this.queryStr.limit * 1 || 10 
+        let page = Math.max(this.queryStr.page * 1 || 1, 1)
+        let limit = Math.min(this.queryStr.limit * 1 || 10, 50)
         let skip = (page - 1)*limit
+        this.page = page
+        this.limit = limit
         this.query = this.query.skip(skip).limit(limit)
         return this
     }

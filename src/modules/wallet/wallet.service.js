@@ -49,8 +49,8 @@ exports.getWalletTransactions = async (walletId, query) => {
     const transactions = await features.query
     return {
         total,
-        page: query.page * 1 || 1,
-        limit: query.limit * 1 || 10,
+        page: features.page,
+        limit: features.limit,
         transactions
     }
 }

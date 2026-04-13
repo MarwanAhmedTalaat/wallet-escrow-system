@@ -1,27 +1,35 @@
 const express = require("express")
-const Router = express.Router()
+const router = express.Router()
 const walletController = require("../wallet/wallet.controller.js")
 const validateWallet = require("./wallet.validation.js")
-Router
+
+router
 .route("/")
-.post(validateWallet.validateCreateWallet,walletController.createWallet)
+.post(validateWallet.validateCreateWallet, walletController.createWallet)
 .get(walletController.getAllWallet)
-Router
+
+router
 .route("/:id")
 .get(walletController.getWallet)
-Router
+
+router
 .route("/:id/balance")
 .get(walletController.getBalance)
-Router
+
+router
 .route("/:id/credit")
-.patch(validateWallet.validateAmount,walletController.creditWallet)
-Router
+.patch(validateWallet.validateAmount, walletController.creditWallet)
+
+router
 .route("/:id/debit")
-.patch(validateWallet.validateAmount,walletController.debitWallet)
-Router
+.patch(validateWallet.validateAmount, walletController.debitWallet)
+
+router
 .route("/:id/transactions")
 .get(walletController.getWalletTransactions)
-Router
+
+router
 .route("/:id/transfer")
 .post(walletController.transfer)
-module.exports = Router
+
+module.exports = router

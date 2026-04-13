@@ -51,7 +51,7 @@ exports.getWalletTransactions = catchAsync(async(req,res,next)=>{
     if(result.transactions.length === 0){
         return res.status(200).json({
             success : true,
-            message : "No Transaction for this wallet "
+            message : "No Transaction else for this wallet "
         })
     }
     const formatted = result.transactions.map(t => {
@@ -80,6 +80,12 @@ exports.getWalletTransactions = catchAsync(async(req,res,next)=>{
     pages,
     hasNext: result.page < pages,
     hasPrev: result.page > 1
+    }
+    if(result.page > pages){
+        return res.status(404).json({
+            success: false,
+            message: "No Transaction else for this wallet"
+        })
     }
     res.status(200).json({
         success: true,
