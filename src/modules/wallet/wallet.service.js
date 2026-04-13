@@ -2,7 +2,9 @@ const walletRepo = require("../wallet/wallet.repository.js")
 const Transaction = require("../transaction/transaction.model.js")
 const transactionRepo = require("../transaction/transaction.repository.js")
 const mongoose = require("mongoose")
+const feature = require("../../core/utils/apiFeatures.js")
 const AppError = require("../../core/utils/AppError.js")
+const apiFeatures = require("../../core/utils/apiFeatures.js")
 exports.createWallet = async (data)=>{
     return await walletRepo.createWallet(data)
 }
@@ -37,8 +39,9 @@ exports.debitWallet = async (id,amount)=>{
     await Transaction.create({walletId:wallet._id,operation:"debit",amount:amount,balanceAfter:wallet.balance})
     return wallet.balance
 }
-exports.getWalletTransactions = async (walletId)=>{
-    const transaction = await transactionRepo.getWalletTransactions(walletId)
+exports.getWalletTransactions = async (walletId,query)=>{
+    const feature = new apiFeatures(transactionRepo.getWalletTransactions(walletId),query).pagination()
+    const transaction = await feature.query
     if(!transaction) throw new AppError(400,"Transaction for this Wallet not found")
     return transaction
 }
