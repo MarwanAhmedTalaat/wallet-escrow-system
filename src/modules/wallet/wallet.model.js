@@ -4,6 +4,12 @@ const walletSchema = new mongoose.Schema({
         type : String,
         required : true
     },
+    type : {
+        type : String,
+        unique : true,
+        enum : ["user","escrow","revenue"],
+        default : "user"
+    },
     balance :{
         type : Number,
         default : 0

@@ -9,6 +9,10 @@ router
 .get(walletController.getAllWallet)
 
 router
+.route("/platform")
+.get(walletController.getPlatformWallets)
+
+router
 .route("/:id")
 .get(walletController.getWallet)
 
@@ -31,5 +35,12 @@ router
 router
 .route("/:id/transfer")
 .post(walletController.transfer)
+
+router
+.route("/transactions/:referenceId")
+.get(walletController.getTransactionByReferenceId)
+router
+.route("/purchase")
+.post(walletController.purchase)
 
 module.exports = router

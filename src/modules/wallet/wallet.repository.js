@@ -12,3 +12,12 @@ exports.getWallet = async (id, session)=>{
     if(session) query.session(session)
     return await query
 }
+exports.getPlatformWallet = async(type)=>{
+    let wallet = await Wallet.findOne({type})
+    if(!wallet)
+    wallet = await Wallet.create({
+        name : `Platform ${type}`,
+        type
+    })
+    return wallet
+}

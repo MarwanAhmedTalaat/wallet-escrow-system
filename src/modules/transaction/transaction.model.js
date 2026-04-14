@@ -12,11 +12,14 @@ const transactionSchema = new mongoose.Schema({
     },
     category : {
     type : String,
-    enum: ["transfer","refund","fee"]
+    enum: ["transfer","refund","fee","purchase","payout"]
     },
     relatedWallet : {
     type : mongoose.Schema.Types.ObjectId,
     ref : "Wallet"
+    },
+    referenceId : {
+    type : mongoose.Schema.Types.ObjectId
     },
     amount : {
         type : Number,
@@ -25,10 +28,14 @@ const transactionSchema = new mongoose.Schema({
     balanceAfter : {
         type : Number,
         required :true
+    },
+    note : {
+        type : String
     }
 },{
     timestamps: true
 })
 transactionSchema.index({ walletId: 1, createdAt: -1 })
+transactionSchema.index({ referenceId: 1 })
 const Transaction = mongoose.model("Transaction",transactionSchema)
 module.exports = Transaction
