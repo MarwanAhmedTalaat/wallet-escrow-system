@@ -92,6 +92,10 @@ const apiFeatures = require("../../core/utils/apiFeatures.js")
             throw new AppError(400,"reference Not Found !")
         }
 
+    const first = transaction[0]
+    const category = first.category
+
+    if(category === "transfer"){
         const debit = transaction.find(t => t.operation === "debit")
         const credit = transaction.find(t => t.operation === "credit")
 
@@ -104,6 +108,38 @@ const apiFeatures = require("../../core/utils/apiFeatures.js")
             note: debit.note,
             createdAt: debit.createdAt
         }
+    }
+
+    if(category === "purchase"){
+        const purchaseDebit = transaction.find(
+            t => t.category === "purchase" && t.operation === "debit"
+        )
+
+        const purchaseCredit = transaction.find(
+            t => t.category === "purchase" && t.operation === "credit"
+        )
+
+        const feeDebit = transaction.find(
+            t => t.category === "fee" && t.operation === "debit"
+        )
+
+        const payoutCredit = transaction.find(
+            t => t.category === "payout" && t.operation === "credit"
+        )
+
+        return {
+            referenceId,
+            category: "purchase",
+            amount: purchaseDebit.amount,
+            fee: feeDebit?.amount || 0,
+            net: payoutCredit?.amount || 0,
+            buyer: purchaseDebit.walletId,
+            seller: payoutCredit?.walletId,
+            createdAt: purchaseDebit.createdAt
+        }
+    }
+
+    return transaction
     }
 
     exports.getPlatformWallets = async ()=>{
