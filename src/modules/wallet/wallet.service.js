@@ -209,68 +209,54 @@ const apiFeatures = require("../../core/utils/apiFeatures.js")
     }],{ session })
     }
 
-    exports.creditSellerFromEscrow = async (escrow,sellerWallet,amount,referenceId,option,session)=>{
-
-    escrow.balance -= amount
-    sellerWallet.balance += amount
-
-    await escrow.save({ session })
-    await sellerWallet.save({ session })
-
-    await Transaction.create([{
-        walletId: escrow._id,
-        operation: "debit",
-        category: "payout",
-        relatedWallet: sellerWallet._id,
-        referenceId,
-        amount,
-        balanceAfter: escrow.balance,
-        note: option?.note
-    }],{ session })
+    exports.createPendingPayout = async (sellerWallet,escrow,amount,referenceId,option,session) => {
 
     await Transaction.create([{
         walletId: sellerWallet._id,
         operation: "credit",
         category: "payout",
+        status: "pending", 
+        remainingAmount: amount, 
         relatedWallet: escrow._id,
         referenceId,
         amount,
         balanceAfter: sellerWallet.balance,
         note: option?.note
-    }],{ session })
+    }], { session, ordered: true })
+
     }
-    exports.purchase = async (buyerId,sellerId,amount,option)=>{
+    exports.purchase = async (buyerId, sellerId, amount, option) => {
     const session = await mongoose.startSession()
     session.startTransaction()
     
     try {
+        const { escrow , revenue } = await this.getPlatformWallets()
+        const buyerWallet = await walletRepo.getWallet(buyerId, session)
+        const sellerWallet = await walletRepo.getWallet(sellerId, session)
 
-    const { escrow , revenue } = await this.getPlatformWallets()
-    const buyerWallet = await walletRepo.getWallet(buyerId, session)
-    const sellerWallet = await walletRepo.getWallet(sellerId, session)
+        if(!buyerWallet || !sellerWallet) throw new AppError(400,"Wallet not found")
+        if(buyerWallet.balance < amount) throw new AppError(400,"Insufficient balance")
 
-    if(!buyerWallet || !sellerWallet) throw new AppError(400,"Wallet not found")
-    if(buyerWallet.balance < amount) throw new AppError(400,"Insufficient balance")
+        const referenceId = new mongoose.Types.ObjectId()
 
-    const referenceId = new mongoose.Types.ObjectId()
+        await this.debitBuyerToEscrow(buyerWallet,escrow,amount,referenceId,option,session)
 
-    await this.debitBuyerToEscrow(buyerWallet,escrow,amount,referenceId,option,session)
+        const fee = amount * 0.10
+        await this.takePlatformFee(escrow,revenue,fee,referenceId,option,session)
 
-    const fee = amount * 0.10
-    await this.takePlatformFee(escrow,revenue,fee,referenceId,option,session)
+        const net = amount - fee
 
-    const net = amount - fee
-    await this.creditSellerFromEscrow(escrow,sellerWallet,net,referenceId,option,session)
+        await this.createPendingPayout(sellerWallet,escrow,net,referenceId,option,session)
 
-    await session.commitTransaction()
-    session.endSession()
+        await session.commitTransaction()
+        session.endSession()
 
-    return {
+        return {
         referenceId,
         amount,
         fee,
         net
-    }
+        }
 
     } catch (error) {
         await session.abortTransaction()
@@ -422,3 +408,90 @@ const apiFeatures = require("../../core/utils/apiFeatures.js")
     }
     }
 
+    exports.getPayoutsStatus = async(walletId)=>{
+        const payouts = await Transaction.find({
+            walletId,
+            category : "payout"
+        })
+        const now = Date.now()
+        const days_14 = 10 * 1000
+        const result = payouts.map(t=>{
+                
+            return {
+                
+                    referenceId : t.referenceId,
+                    amount : t.amount,
+                    status : t.status,
+                    createdAt : t.createdAt
+                }
+            }
+        )
+        return result
+    }
+
+
+
+    exports.withdraw = async (walletId, amount) => {
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    
+    try {
+        if (amount <= 0) throw new AppError(400, "Invalid amount")
+        const referenceId = new mongoose.Types.ObjectId()
+        const availablePayouts = await transactionRepo.getAvailablePayouts(walletId, session)
+        const withdrawableAmount = availablePayouts.reduce(
+            (sum, t) => sum + t.remainingAmount, 0
+        )
+        if (amount > withdrawableAmount) throw new AppError(400, "Insufficient withdrawable balance")
+
+        let remaining = amount
+        for (let t of availablePayouts) {
+            if (remaining <= 0) break
+            const take = Math.min(t.remainingAmount, remaining)
+            remaining -= take
+            t.remainingAmount -= take
+            if (t.remainingAmount === 0) {
+                t.status = "used"
+            }
+            await t.save({ session })
+        }
+
+        const wallet = await walletRepo.getWallet(walletId, session)
+        if (!wallet) throw new AppError(400, "Wallet not found")
+
+        const { escrow } = await this.getPlatformWallets()
+
+        escrow.balance -= amount
+        wallet.balance += amount
+        await wallet.save({ session })
+        await escrow.save({ session })
+
+        await Transaction.create([{
+            walletId,
+            operation: "debit",
+            category: "withdraw",
+            referenceId,
+            amount,
+            balanceAfter: wallet.balance
+        }], { session, ordered: true })
+
+        await session.commitTransaction()
+        session.endSession()
+
+            const newAvailable = availablePayouts.reduce(
+    (sum, t) => sum + t.remainingAmount,
+    0
+    )
+        return {
+            referenceId,
+            amount,
+            balanceAfter: wallet.balance,
+            withdrawableLeft: newAvailable
+        }
+
+    } catch (error) {
+        await session.abortTransaction()
+        session.endSession()
+        throw error
+    }
+}

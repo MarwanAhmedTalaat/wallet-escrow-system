@@ -37,6 +37,10 @@ router
 .post(walletController.transfer)
 
 router
+.route("/:id/payouts-status")
+.get(walletController.PayoutsStatus)
+
+router
 .route("/transactions/:referenceId")
 .get(walletController.getTransactionByReferenceId)
 router
@@ -45,4 +49,7 @@ router
 router
 .route("/refund")
 .post(walletController.refund)
+router
+.route("/:id/withdraw")
+.post(walletController.withdraw)
 module.exports = router

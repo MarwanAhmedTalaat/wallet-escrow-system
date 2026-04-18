@@ -143,3 +143,23 @@ const AppError = require("../../core/utils/AppError.js")
             data : refund
         })
     })
+
+    exports.PayoutsStatus = catchAsync(async(req,res,next)=>{
+        const status = await walletService.getPayoutsStatus(req.params.id)
+        if(status === 0) return res.status(200).json({
+            success : true,
+            message : "No Transaction else for this wallet"
+        })
+        res.status(200).json({
+            success : true,
+            data : status
+        })
+    })
+
+    exports.withdraw = catchAsync(async(req,res,next)=>{
+        const result = await walletService.withdraw(req.params.id,req.body.amount)
+        res.status(200).json({
+            success : true,
+            data : result
+        })
+    })

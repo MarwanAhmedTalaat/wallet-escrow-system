@@ -12,7 +12,15 @@ const transactionSchema = new mongoose.Schema({
     },
     category : {
     type : String,
-    enum: ["transfer","refund","fee","purchase","payout"]
+    enum: ["transfer","refund","fee","purchase","payout","withdraw"]
+    },
+    status :{
+    type : String,
+    enum : ["pending","available","used"],
+    default : "pending"
+    },
+    remainingAmount : {
+        type : Number 
     },
     relatedWallet : {
     type : mongoose.Schema.Types.ObjectId,
