@@ -135,3 +135,11 @@ const AppError = require("../../core/utils/AppError.js")
             data : result
         })
     })
+    
+    exports.refund = catchAsync(async(req,res,next)=>{
+        const refund = await walletService.refund(req.body.referenceId)
+        res.status(200).json({
+            success : true,
+            data : refund
+        })
+    })

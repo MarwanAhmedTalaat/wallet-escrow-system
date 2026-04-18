@@ -277,4 +277,148 @@ const apiFeatures = require("../../core/utils/apiFeatures.js")
         session.endSession()
         throw error
     }
+    }
+    exports.reversePayout = async (sellerWallet, escrow, net, referenceId, option, session)=>{
+        if(sellerWallet.balance < net) throw new AppError(400,"Seller don't have Enough Money")
+        
+        sellerWallet.balance-=net
+        escrow.balance+=net
+        await sellerWallet.save({session})
+        await escrow.save({session})
+        
+        await Transaction.create([{
+        walletId: sellerWallet._id,
+        operation: "debit",
+        category: "refund",
+        relatedWallet: escrow._id,
+        referenceId,
+        amount: net,
+        balanceAfter: sellerWallet.balance,
+        note: option?.note
+    },
+    {
+        walletId: escrow._id,
+        operation: "credit",
+        category: "refund",
+        relatedWallet: sellerWallet._id,
+        referenceId,
+        amount: net,
+        balanceAfter: escrow.balance,
+        note: option?.note
+    }],{session,ordered: true})
+    
 }
+    exports.reverseFee = async(revenue,escrow,fee,referenceId, option, session)=>{
+        if(revenue.balance < fee) throw new AppError(400,"revenue don't have Enough Money")
+        
+        revenue.balance -= fee
+        escrow.balance += fee
+        await revenue.save({session})
+        await escrow.save({session})
+
+        await Transaction.create([{
+        walletId: revenue._id,
+        operation: "debit",
+        category: "refund",
+        relatedWallet: escrow._id,
+        referenceId,
+        amount: fee,
+        balanceAfter: revenue.balance,
+        note: option?.note
+    },
+    {
+        walletId: escrow._id,
+        operation: "credit",
+        category: "refund",
+        relatedWallet: revenue._id,
+        referenceId,
+        amount: fee,
+        balanceAfter: escrow.balance,
+        note: option?.note
+        }],{session,ordered: true})
+    }
+
+    exports.refundBuyer = async (escrow,buyerWallet,amount,referenceId, option, session)=>{
+        if(escrow.balance < amount) throw new AppError(400,"escrow don't have Enough Money")
+        
+        escrow.balance -= amount
+        buyerWallet.balance += amount
+        await escrow.save({session})
+        await buyerWallet.save({session})
+
+        await Transaction.create([{
+        walletId: escrow._id,
+        operation: "debit",
+        category: "refund",
+        relatedWallet: buyerWallet._id,
+        referenceId,
+        amount: amount,
+        balanceAfter: escrow.balance,
+        note: option?.note
+    },
+    {
+        walletId: buyerWallet._id,
+        operation: "credit",
+        category: "refund",
+        relatedWallet: escrow._id,
+        referenceId,
+        amount: amount,
+        balanceAfter: buyerWallet.balance,
+        note: option?.note
+        }],{session,ordered: true})
+    }
+
+    exports.refund = async(mReferenceId,option)=>{
+        const session = await mongoose.startSession()
+    session.startTransaction()
+    
+    try {
+
+    const transactions = await transactionRepo.getTransactionByReferenceId(mReferenceId)
+
+    if(!transactions || transactions.length === 0) throw new AppError(400,"Transaction not found")
+        
+    const purchaseDebit = transactions.find(t => t.category === "purchase" && t.operation === "debit")
+    const payoutCredit = transactions.find(t => t.category === "payout" && t.operation === "credit")
+    const feeDebit = transactions.find(t => t.category === "fee" && t.operation === "debit")
+    if(!purchaseDebit || !payoutCredit) throw new AppError(400,"Invalid transaction")
+
+
+    const buyerId =  purchaseDebit.walletId
+    const sellerId =  payoutCredit.walletId
+    const amount =  purchaseDebit.amount
+    const net =   payoutCredit.amount
+    const fee =  feeDebit?.amount ||0
+
+    const buyerWallet = await walletRepo.getWallet(buyerId,session)
+    const sellerWallet = await walletRepo.getWallet(sellerId,session)
+    const {escrow,revenue} = await this.getPlatformWallets()
+    
+    if(!buyerWallet || !sellerWallet) throw new AppError(400,"Process failed ")
+    if(sellerWallet.balance < net) throw new AppError(400,"Seller donot have net")
+    if(revenue.balance < fee) throw new AppError(400,"revenue donot have fee")
+
+    const referenceId = new mongoose.Types.ObjectId()
+
+    await this.reversePayout(sellerWallet,escrow,net,referenceId,option,session)
+    await this.reverseFee(revenue,escrow,fee,referenceId,option,session)
+    await this.refundBuyer(escrow,buyerWallet,amount,referenceId,option,session)
+
+    await session.commitTransaction()
+    session.endSession()
+
+    return {
+    referenceId,
+    originalReferenceId: mReferenceId,
+    amount,
+    fee,
+    net
+    }
+
+    } catch (error) {
+        await session.abortTransaction()
+        session.endSession()
+        throw error
+    }
+    }
+

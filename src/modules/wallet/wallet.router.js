@@ -42,5 +42,7 @@ router
 router
 .route("/purchase")
 .post(walletController.purchase)
-
+router
+.route("/refund")
+.post(walletController.refund)
 module.exports = router
