@@ -1,29 +1,42 @@
 # Wallet API Architecture
 
 ## Overview
-Wallet API is a RESTful backend service for managing user wallets, balances, and transactions.
+Wallet API is a RESTful backend service for managing wallets, balances, transactions, and marketplace payment flows.
 
 The system follows MVC architecture with a dedicated service layer and loosely coupled data access.
 
-The goal is to keep business logic isolated, testable, and scalable.
+The business logic is isolated, testable, and scalable.
+
+---
+
 ## Goals
 - Clear separation of concerns
 - Scalable architecture
 - Testable business logic
 - Loosely coupled data access
-- Versioned API (V1, V2, V3)
 - Clean commit history
 - Easy feature extension
+- Transaction traceability
+- Atomic financial operations
+
+---
+
 ## Non-Goals
 - No microservices architecture
 - No event-driven system (for now)
 - No real-time updates
 - No distributed transactions
 - No multi-database runtime support
+
+---
+
 ## High Level Architecture
-Client ---> Router ---> Controller ---> Service ---> Data Access ---> Database
+
+Client → Router → Controller → Service → Repository → Database
 
 Each layer has a single responsibility and communicates only with the next layer.
+
+---
 
 ## Layers
 
@@ -36,94 +49,171 @@ Handles request/response and calls services.
 ### Service Layer
 Contains business logic and use cases.
 
+Examples:
+- purchase
+- refund
+- withdraw
+- transfer
+
 ### Repository Layer
 Handles database operations and abstracts persistence.
 
+---
+
 ## Folder Structure
+
 wallet-api/
- ├── docs/
- ├── src/
- │    ├── config/
- │    ├── core/
- │    │    ├── middleware/
- │    │    └── errors/
- │    ├── modules/
- │    │    └── wallet/
- │    ├── routes/
- │    ├── app.js
- │    └── server.js
- └── package.json
+├── docs/
+├── scripts/
+│   └── migrate-transaction-operation.js
+│
+├── src/
+│   ├── config/
+│   │
+│   ├── core/
+│   │   ├── middleware/
+│   │   │   ├── GlobalError.js
+│   │   │   └── rateLimit.js
+│   │   │
+│   │   └── utils/
+│   │       ├── apiFeatures.js
+│   │       ├── AppError.js
+│   │       └── catchAsync.js
+│   │
+│   ├── modules/
+│   │   ├── transaction/
+│   │   │   ├── transaction.model.js
+│   │   │   └── transaction.repository.js
+│   │   │
+│   │   └── wallet/
+│   │       ├── wallet.model.js
+│   │       ├── wallet.repository.js
+│   │       ├── wallet.service.js
+│   │       ├── wallet.controller.js
+│   │       ├── wallet.validation.js
+│   │       └── wallet.router.js
+│   │
+│   ├── app.js
+│   └── server.js
+│
+└── package.json
+
+---
+
 ## Request Flow
-1. **Client**: Sends HTTP request.
-2. **Server (server.js)**: Receives request and passes it to `app.js`.
-3. **Router (routes/index.js)**: Directs request to the `wallet.router.js`.
-4. **Validation (wallet.validation.js)**: Middleware checks if the input is correct.
-5. **Controller (wallet.controller.js)**: Extracts data and calls the Service.
-6. **Service (wallet.service.js)**: Executes business logic (The "Brain").
-7. **Repository (wallet.repository.js)**: Interacts with the `wallet.model.js`.
-8. **Response**: The Controller sends the final JSON back to the Client.
-## Versioning Strategy
-The project evolves using incremental versions.
 
-V1
-- Create wallet
-- Get wallet
-- Basic balance
+1. Client sends HTTP request
+2. Server receives request
+3. Router forwards request
+4. Validation middleware validates input
+5. Controller extracts request data
+6. Service executes business logic
+7. Repository interacts with database
+8. Response returned to client
 
-V2
-- Credit wallet
-- Debit wallet
-- Transaction history
+---
 
-V3
-- Transfer between wallets
-- Concurrency handling
-- Idempotency
-## Database Design (High level)
-Initial database: MongoDB
+## Core Business Flows
 
-Wallet
+### Purchase Flow
+
+Buyer → Escrow  
+Escrow → Revenue (Fee)  
+Escrow → Pending Payout  
+
+---
+
+### Refund Flow
+
+Reverse Payout  
+Reverse Fee  
+Refund Buyer  
+
+---
+
+### Withdraw Flow
+
+Escrow → Seller
+
+Supports:
+- delayed payouts
+- partial withdrawals
+
+---
+
+## Database Design
+
+### Wallet Collection
+Fields:
 - _id
-- userId
+- name
 - balance
-- currency
-- createdAt
-- updatedAt
+- type (user / escrow / revenue)
 
-Transactions will be introduced in V2.
+### Transaction Collection
+Fields:
+- walletId
+- operation
+- category
+- amount
+- balanceAfter
+- relatedWallet
+- referenceId
+- status
+- remainingAmount
+- createdAt
+
+---
+
+## Transaction Categories
+- purchase
+- fee
+- payout
+- withdraw
+- refund
+- transfer
+
+---
+
+## Payout Status Lifecycle
+
+pending → available → used
+
+---
+
+## Atomic Operations
+Critical operations use MongoDB sessions:
+
+- purchase
+- transfer
+- refund
+- withdraw
+
+This ensures rollback on failure.
+
+---
+
+## Versioning Strategy
+
+### V1
+- Wallet basics
+
+### V2
+- Transactions
+
+### V3
+- Transfers
+
+### V4
+- Escrow / Refund / Withdraw
+
+---
+
 ## Future Extensions
-- Wallet to wallet transfer
-- Multiple currencies
-- Transaction limits
-- Scheduled payments
 - External payment providers
+- Deposit integration
+- Multiple currencies
+- Rate limiting
 - Notifications
 - Audit logs
-## V1 Modules
-
-Wallet Module
-- wallet.router.js
-- wallet.controller.js
-- wallet.service.js
-- wallet.repository.js
-- wallet.model.js
-- wallet.validation.js
-
-V1 Endpoints
-- POST /wallet
-- GET /wallet/:id
-- GET /wallet/:id/balance
-
-Wallet Schema
-- _id
-- userId
-- balance (default: 0)
-- currency (default: EGP)
-- createdAt
-- updatedAt
-
-V1 Rules
-- Wallet starts with balance = 0
-- One wallet per user
-- Balance cannot be negative
-- Currency is fixed on creation
+- Analytics
