@@ -1,0 +1,521 @@
+{
+  "info": {
+    "_postman_id": "bb875e69-e998-4c23-9a57-869f17b82d10",
+    "name": "Wallet API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44049031",
+    "_collection_link": "https://go.postman.co/collection/44049031-bb875e69-e998-4c23-9a57-869f17b82d10?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Wallet",
+      "item": [
+        {
+          "name": "createWallet",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"balance\": 100\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/wallet",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetAllWallets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getoneWallet",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da75d2ca75fe0e5afd3b04",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da75d2ca75fe0e5afd3b04"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getBalance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da75d2ca75fe0e5afd3b04/balance",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da75d2ca75fe0e5afd3b04",
+                "balance"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "walletPlatform",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/platform",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "platform"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "credit",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"amount\": 1000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da75d2ca75fe0e5afd3b04/credit",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da75d2ca75fe0e5afd3b04",
+                "credit"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "debit",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"amount\" :6000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da75d2ca75fe0e5afd3b04/debit",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da75d2ca75fe0e5afd3b04",
+                "debit"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da79f26e8ae52243715aad/transactions",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da79f26e8ae52243715aad",
+                "transactions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "transfer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"toWalletId\": \"69da79f26e8ae52243715aad\",\r\n    \"amount\" :2000\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da75d2ca75fe0e5afd3b04/transfer",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da75d2ca75fe0e5afd3b04",
+                "transfer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getTransactionByReferenceId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/transactions/69e3ba97ae68a934d6d75445",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "transactions",
+                "69e3ba97ae68a934d6d75445"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "purchase",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"buyerId\": \"69da75d2ca75fe0e5afd3b04\",\r\n  \"sellerId\": \"69da79f26e8ae52243715aad\",\r\n  \"amount\": 1000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/purchase",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "purchase"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "refund",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n{\r\n  \"referenceId\": \"69e38f845c1d0598b304ee8a\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/refund",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "refund"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "payouts-status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da79f26e8ae52243715aad/payouts-status",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da79f26e8ae52243715aad",
+                "payouts-status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "withdraw",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da79f26e8ae52243715aad/withdraw",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da79f26e8ae52243715aad",
+                "withdraw"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Query Features",
+      "item": [
+        {
+          "name": "Pagination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da75d2ca75fe0e5afd3b04/transactions?page=1&limit=5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da75d2ca75fe0e5afd3b04",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da75d2ca75fe0e5afd3b04/transactions?operation=credit",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da75d2ca75fe0e5afd3b04",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "operation",
+                  "value": "credit"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "sort",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da75d2ca75fe0e5afd3b04/transactions?sort=-createdAt",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da75d2ca75fe0e5afd3b04",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "-createdAt"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "fields",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/wallet/69da75d2ca75fe0e5afd3b04/transactions?fields=amount,operation",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "wallet",
+                "69da75d2ca75fe0e5afd3b04",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "fields",
+                  "value": "amount,operation"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/test",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "test"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

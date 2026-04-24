@@ -14,6 +14,7 @@ A RESTful backend service for managing wallets, balances, transactions, and mark
 - Delayed payouts
 - Partial withdrawals
 - Transaction history with pagination
+- Filtering / Sorting / Field Limiting
 - Rate limiting
 
 ---
@@ -26,7 +27,7 @@ Client → Router → Controller → Service → Repository → Database
 
 ### Architecture Diagram
 
-![Architecture Diagram](docs\diagram\wallet-api-architecture-diagram.png)
+![Architecture Diagram](docs/diagram/wallet-api-architecture-diagram.png)
 
 ---
 
@@ -60,6 +61,7 @@ Supports delayed payouts and partial withdrawals.
 
 ## Folder Structure
 
+```text
 wallet-api/
 ├── docs/
 ├── scripts/
@@ -95,3 +97,54 @@ wallet-api/
 │   └── server.js
 │
 └── package.json
+
+```
+---
+
+## API Endpoints
+
+### Wallet
+- POST /api/wallet
+- GET /api/wallet
+- GET /api/wallet/:id
+- GET /api/wallet/:id/balance
+
+### Transactions
+- PATCH /api/wallet/:id/credit
+- PATCH /api/wallet/:id/debit
+- GET /api/wallet/:id/transactions
+
+### Transfer
+- POST /api/wallet/:id/transfer
+
+### Marketplace
+- POST /api/wallet/purchase
+- POST /api/wallet/refund
+- GET /api/wallet/:id/payouts-status
+- POST /api/wallet/:id/withdraw
+
+---
+
+## Postman Collection
+
+You can test the API using the Postman collection:
+
+[Wallet API Postman Collection](docs/postman/wallet-api-postman-collection.json)
+
+---
+
+## Security Features
+
+- Rate Limiting
+- MongoDB Sessions / Transactions
+- Atomic operations
+- Global Error Handling
+
+---
+
+## Future Improvements
+
+- JWT Authentication
+- External payment integration
+- Notifications
+- Analytics
