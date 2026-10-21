@@ -25,8 +25,6 @@ The project follows layered architecture:
 
 Client → Router → Controller → Service → Repository → Database
 
-### Architecture Diagram
-
 ---
 
 ## Core Business Flows
