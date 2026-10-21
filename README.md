@@ -27,8 +27,6 @@ Client → Router → Controller → Service → Repository → Database
 
 ### Architecture Diagram
 
-![Architecture Diagram](docs/diagram/wallet-api-architecture-diagram.png)
-
 ---
 
 ## Core Business Flows
